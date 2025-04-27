@@ -12,7 +12,7 @@
   "description": "Simple Dota2API on express",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node src/server.js",
+    "start": "tsc && node dist/server.js",
     "clean": "tsc --build --clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
