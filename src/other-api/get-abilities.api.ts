@@ -1,7 +1,9 @@
 import axios from "axios";
-import {IHeroAbilities } from "../types";
+import { IAbilities } from "../types";
 
-export const getHeroAbilities = async (): Promise<IHeroAbilities> => {
-    const res = await axios.get(`https://raw.githubusercontent.com/odota/dotaconstants/refs/heads/master/build/hero_abilities.json`);
-    return res.data;
+export const getAbilities = async (): Promise<IAbilities> => {
+  const res = await axios.get(
+    `https://raw.githubusercontent.com/odota/dotaconstants/refs/heads/master/build/abilities.json`
+  );
+  return res.data;
 };
