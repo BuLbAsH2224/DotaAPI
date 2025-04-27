@@ -1,15 +1,8 @@
 import { getHeroPopularItems, getItemsAPI } from "../other-api";
-import {
-  HeroPreviews,
-  IHeroPopularItemsID,
-  IHeroPreview,
-  IHeroStats,
-  IItem,
-  IItems,
-} from "../types";
+import { IHeroPopularItemsID, IItem, IItems } from "../types";
 import { Request, Response } from "express";
 import { send } from "../utils";
-export const sendHeroPopulatItemsFull = async (
+export const sendHeroPopularItemsFull = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -44,5 +37,6 @@ export const sendHeroPopulatItemsFull = async (
     mid_game_items: getItemsFromIds(heroPopularItems.mid_game_items),
     late_game_items: getItemsFromIds(heroPopularItems.late_game_items),
   };
-  send(res,200,"json",heroPopularItemsFilter)
+  
+  send(res, 200, "json", heroPopularItemsFilter);
 };

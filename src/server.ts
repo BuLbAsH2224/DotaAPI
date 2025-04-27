@@ -1,5 +1,5 @@
 import express, { Application, NextFunction, Request, Response } from "express";
-import { sendHeroesPreviewInfo, sendHeroPopulatItemsFull, sendHeroStats } from "./api";
+import { sendHeroAbilities, sendHeroesPreviewInfo, sendHeroPopularItemsFull, sendHeroStats } from "./api";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -26,7 +26,11 @@ app.post("/getHeroStats", (req: Request, res: Response) => {
 });
 
 app.post("/getHeroPopularItems", (req: Request, res: Response) => {
-  sendHeroPopulatItemsFull(req,res)
+  sendHeroPopularItemsFull(req,res)
+});
+
+app.post("/getHeroAbilities", (req: Request, res: Response) => {
+  sendHeroAbilities(req,res)
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
