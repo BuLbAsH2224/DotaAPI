@@ -3,14 +3,10 @@ import { IHeroPopularItemsID, IItem, IItems } from "../types";
 import { Request, Response } from "express";
 import { send } from "../utils";
 export const sendHeroPopularItemsFull = async (
-  req: Request,
+  id: string,
   res: Response
 ): Promise<void> => {
-  const { id } = req.body as { id?: string };
-  if (!id) {
-    send(res, 400, "text/plain", "no id");
-    return;
-  }
+  
   const heroPopularItems: IHeroPopularItemsID = await getHeroPopularItems(id);
   const items: IItems = await getItemsAPI();
 
