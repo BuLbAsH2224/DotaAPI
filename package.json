@@ -3,7 +3,6 @@
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.2",
     "axios": "^1.9.0",
-    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0"
   },
@@ -12,7 +11,7 @@
   "description": "Simple Dota2API on express",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node src/server.js",
+    "start": "tsc && node dist/server.js",
     "clean": "tsc --build --clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
