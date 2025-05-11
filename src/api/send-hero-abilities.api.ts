@@ -3,7 +3,7 @@ export const getAbilityVideo = (
   abilityName: string
 ): string => {
   const heroNameFilter = heroName.replace("npc_dota_hero_", "");
-  const url = `https://cdn.akamai.steamstatic.com/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${abilityName}.mp4`;
+  const url = `${defaultUrl}/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${abilityName}.mp4`;
 
   return url;
 };
@@ -14,7 +14,7 @@ export const getAbilityImg = (
 ): string => {
   const heroNameFilter = heroName.replace("npc_dota_hero_", "");
   const abilityNameFilter = abilityName.toLowerCase().split(" ").join("_");
-  const url = `https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/abilities/${heroNameFilter}_${abilityNameFilter}.png`;
+  const url = `${defaultUrl}/apps/dota2/images/dota_react/abilities/${heroNameFilter}_${abilityNameFilter}.png`;
 
   return url;
 };
@@ -24,10 +24,13 @@ import {
   IAbilities,
   IAbilityForSend,
   IAghsDesc,
+  IFacet,
   IHeroAbilities,
+  IHeroAbilityData,
 } from "../types";
 import { getAbilities, getAghs, getHeroesAbilities } from "../other-api";
 import { send } from "../utils";
+import { defaultUrl } from "../config";
 
 export const sendHeroAbilities = async (
   heroName: string,
@@ -56,30 +59,31 @@ export const sendHeroAbilities = async (
     (item: IAghsDesc) => item.hero_name === heroName
   )[0];
 
+  // способности нужного персонажа
+
+  const heroAbilities: IHeroAbilityData = heroesAbilitiesInfo[`${heroName}`];
+
   if (!heroAghsAndShard) {
     send(res, 400, "text/plain", "hero not found");
     return;
   }
-  const passiveImg =
-    "https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/icons/innate_icon.png";
+  const passiveImg = `${defaultUrl}/apps/dota2/images/dota_react/icons/innate_icon.png`;
   const heroNameFilter = heroName.replace("npc_dota_hero_", "");
   // детальная информация о способностях персонажа + аганим и шард
-  const shardVideo = `https://cdn.akamai.steamstatic.com/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${heroNameFilter}_aghanims_shard.webm`;
-  const scepterVideo = `https://cdn.akamai.steamstatic.com/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${heroNameFilter}_aghanims_scepter.webm`;
-  const heroesAbilities = {
-    abilities: heroesAbilitiesInfo[`${heroName}`].abilities.map(
-      (item: string): IAbilityForSend => {
-        return {
-          ...abilities[`${item}`],
-          videoSRC:
-            heroAghsAndShard.scepter_skill_name === abilities[`${item}`].dname
-              ? scepterVideo
-              : heroAghsAndShard.shard_skill_name === abilities[`${item}`].dname
-              ? shardVideo
-              : getAbilityVideo(heroName, item),
-        };
-      }
-    ),
+  const shardVideo = `${defaultUrl}/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${heroNameFilter}_aghanims_shard.webm`;
+  const scepterVideo = `${defaultUrl}/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${heroNameFilter}_aghanims_scepter.webm`;
+  const heroAbilitiesFiltered = {
+    abilities: heroAbilities.abilities.map((item: string): IAbilityForSend => {
+      return {
+        ...abilities[`${item}`],
+        videoSRC:
+          heroAghsAndShard.scepter_skill_name === abilities[`${item}`].dname
+            ? scepterVideo
+            : heroAghsAndShard.shard_skill_name === abilities[`${item}`].dname
+            ? shardVideo
+            : getAbilityVideo(heroName, item),
+      };
+    }),
     aghsAndShard: {
       has_scepter: heroAghsAndShard.has_scepter,
       scepter_desc: heroAghsAndShard.scepter_desc,
@@ -97,30 +101,38 @@ export const sendHeroAbilities = async (
       shard_videoSRC: shardVideo,
       shard_imgSRC: getAbilityImg(heroName, heroAghsAndShard.shard_skill_name),
     },
+    aspects: heroAbilities.facets
+      .filter((item: IFacet) => item.deprecated !== "true")
+      .map((item: IFacet) => ({
+        ...item,
+        img: `${defaultUrl}/apps/dota2/images/dota_react/icons/facets/${item.icon}.png`,
+      })),
   };
-
-  heroesAbilities.abilities.map((item: IAbilityForSend) => {
-    item.img = `https://cdn.akamai.steamstatic.com${item.img}`;
+  
+  heroAbilitiesFiltered.abilities.map((item: IAbilityForSend) => {
+    item.img = `${defaultUrl}${item.img}`;
   });
-  const shard: IAbilityForSend | undefined = heroesAbilities.abilities.find(
-    (item: IAbilityForSend) =>
-      item.dname === heroesAbilities.aghsAndShard.shard_skill_name
-  );
-  const scepter: IAbilityForSend | undefined = heroesAbilities.abilities.find(
-    (item: IAbilityForSend) =>
-      item.dname === heroesAbilities.aghsAndShard.scepter_skill_name
-  );
+  const shard: IAbilityForSend | undefined =
+    heroAbilitiesFiltered.abilities.find(
+      (item: IAbilityForSend) =>
+        item.dname === heroAbilitiesFiltered.aghsAndShard.shard_skill_name
+    );
+  const scepter: IAbilityForSend | undefined =
+    heroAbilitiesFiltered.abilities.find(
+      (item: IAbilityForSend) =>
+        item.dname === heroAbilitiesFiltered.aghsAndShard.scepter_skill_name
+    );
 
-  heroesAbilities.aghsAndShard.scepter_imgSRC = scepter
+  heroAbilitiesFiltered.aghsAndShard.scepter_imgSRC = scepter
     ? scepter.is_innate
       ? passiveImg
       : scepter.img
     : "";
 
-  heroesAbilities.aghsAndShard.shard_imgSRC = shard
+  heroAbilitiesFiltered.aghsAndShard.shard_imgSRC = shard
     ? shard.is_innate
       ? passiveImg
       : shard.img
     : "";
-  send(res, 200, "json", heroesAbilities);
+  send(res, 200, "json", heroAbilitiesFiltered);
 };
