@@ -18,16 +18,8 @@ export const getAbilityImg = (
 
   return url;
 };
-import { Request, Response } from "express";
-import {
-  AghsDescs,
-  IAbilities,
-  IAbilityForSend,
-  IAghsDesc,
-  IFacet,
-  IHeroAbilities,
-  IHeroAbilityData,
-} from "../types";
+import { Response } from "express";
+import { IAbilityForSend, IAghsDesc, IFacet, IHeroAbilityData } from "../types";
 import { getAbilities, getAghs, getHeroesAbilities } from "../other-api";
 import { send } from "../utils";
 import { defaultUrl } from "../config";
@@ -36,17 +28,8 @@ export const sendHeroAbilities = async (
   heroName: string,
   res: Response
 ): Promise<void> => {
-  // получение списка всех способностей в игре
-  const abilities: IAbilities = await getAbilities();
-
-  // получение списка всех названий способностей персонажей
-  const heroesAbilitiesInfo: IHeroAbilities = await getHeroesAbilities();
-
-  //получение списка всех аганимов и шардов в игре
-
-  const heroesAghsAndShards: AghsDescs = await getAghs();
-
-  // обработка ошибок загрузок
+  const [abilities, heroesAbilitiesInfo, heroesAghsAndShards] =
+    await Promise.all([getAbilities(), getHeroesAbilities(), getAghs()]);
 
   if (!abilities || !heroesAbilitiesInfo || !heroesAghsAndShards) {
     send(res, 500, "text/plain", "Error other API");
@@ -69,7 +52,7 @@ export const sendHeroAbilities = async (
   }
   const passiveImg = `${defaultUrl}/apps/dota2/images/dota_react/icons/innate_icon.png`;
   const heroNameFilter = heroName.replace("npc_dota_hero_", "");
-  // детальная информация о способностях персонажа + аганим и шард
+  // детальная информация о способностях персонажа + аганим и шард + аспекты
   const shardVideo = `${defaultUrl}/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${heroNameFilter}_aghanims_shard.webm`;
   const scepterVideo = `${defaultUrl}/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${heroNameFilter}_aghanims_scepter.webm`;
   const heroAbilitiesFiltered = {
@@ -108,7 +91,7 @@ export const sendHeroAbilities = async (
         img: `${defaultUrl}/apps/dota2/images/dota_react/icons/facets/${item.icon}.png`,
       })),
   };
-  
+
   heroAbilitiesFiltered.abilities.map((item: IAbilityForSend) => {
     item.img = `${defaultUrl}${item.img}`;
   });
@@ -134,5 +117,6 @@ export const sendHeroAbilities = async (
       ? passiveImg
       : shard.img
     : "";
+
   send(res, 200, "json", heroAbilitiesFiltered);
 };
