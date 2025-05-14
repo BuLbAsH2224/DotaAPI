@@ -1,12 +1,11 @@
 import { getHeroesAPI } from "../other-api";
-import { HeroPreviews, IHeroPreview, IHeroStats } from "../types";
-import { Request,Response } from "express";
+import { IHeroStats } from "../types";
+import { Response } from "express";
 import { send } from "../utils";
 export const sendHeroStats = async (
-  id : string,
+  id: string,
   res: Response
 ): Promise<void> => {
- 
   const heroes: IHeroStats[] = await getHeroesAPI();
   const hero: IHeroStats = heroes.filter(
     (item: IHeroStats) => item.id === parseInt(id)
