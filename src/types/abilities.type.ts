@@ -53,5 +53,8 @@ export interface IAbilityForSend {
     target_type: string[]
     videoSRC: string,
 }
-
+export interface ISkillTree{
+    name: string,
+    level: number
+}
 export type IAbilities = Record<string, IAbility>;

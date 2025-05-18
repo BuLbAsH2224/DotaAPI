@@ -19,7 +19,13 @@ export const getAbilityImg = (
   return url;
 };
 import { Response } from "express";
-import { IAbilityForSend, IAghsDesc, IFacet, IHeroAbilityData } from "../types";
+import {
+  IAbilityForSend,
+  IAghsDesc,
+  IFacet,
+  IHeroAbilityData,
+  ISkillTree,
+} from "../types";
 import { getAbilities, getAghs, getHeroesAbilities } from "../other-api";
 import { send } from "../utils";
 import { defaultUrl } from "../config";
@@ -90,6 +96,9 @@ export const sendHeroAbilities = async (
         ...item,
         img: `${defaultUrl}/apps/dota2/images/dota_react/icons/facets/${item.icon}.png`,
       })),
+    skillTree: heroAbilities.talents.map((item: ISkillTree) => {
+      return { ...abilities[`${item.name}`], level: item.level };
+    }),
   };
 
   heroAbilitiesFiltered.abilities.map((item: IAbilityForSend) => {
