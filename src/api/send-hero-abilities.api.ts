@@ -19,7 +19,13 @@ export const getAbilityImg = (
   return url;
 };
 import { Response } from "express";
-import { IAbilityForSend, IAghsDesc, IFacet, IHeroAbilityData } from "../types";
+import {
+  IAbilityForSend,
+  IAghsDesc,
+  IFacet,
+  IHeroAbilityData,
+  ISkillTree,
+} from "../types";
 import { getAbilities, getAghs, getHeroesAbilities } from "../other-api";
 import { send } from "../utils";
 import { defaultUrl } from "../config";
@@ -90,6 +96,12 @@ export const sendHeroAbilities = async (
         ...item,
         img: `${defaultUrl}/apps/dota2/images/dota_react/icons/facets/${item.icon}.png`,
       })),
+    skillTree: {
+      level1: heroAbilities.talents.filter((item: ISkillTree) => item.level === 1).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+      level2: heroAbilities.talents.filter((item: ISkillTree) => item.level === 2).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+      level3: heroAbilities.talents.filter((item: ISkillTree) => item.level === 3).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+      level4: heroAbilities.talents.filter((item: ISkillTree) => item.level === 4).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+    },
   };
 
   heroAbilitiesFiltered.abilities.map((item: IAbilityForSend) => {
