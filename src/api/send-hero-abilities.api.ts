@@ -96,9 +96,12 @@ export const sendHeroAbilities = async (
         ...item,
         img: `${defaultUrl}/apps/dota2/images/dota_react/icons/facets/${item.icon}.png`,
       })),
-    skillTree: heroAbilities.talents.map((item: ISkillTree) => {
-      return { ...abilities[`${item.name}`], level: item.level };
-    }),
+    skillTree: {
+      level1: heroAbilities.talents.filter((item: ISkillTree) => item.level === 1).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+      level2: heroAbilities.talents.filter((item: ISkillTree) => item.level === 2).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+      level3: heroAbilities.talents.filter((item: ISkillTree) => item.level === 3).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+      level4: heroAbilities.talents.filter((item: ISkillTree) => item.level === 4).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+    },
   };
 
   heroAbilitiesFiltered.abilities.map((item: IAbilityForSend) => {
