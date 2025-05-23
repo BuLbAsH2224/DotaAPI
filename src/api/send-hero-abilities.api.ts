@@ -97,10 +97,26 @@ export const sendHeroAbilities = async (
         img: `${defaultUrl}/apps/dota2/images/dota_react/icons/facets/${item.icon}.png`,
       })),
     skillTree: {
-      level1: heroAbilities.talents.filter((item: ISkillTree) => item.level === 1).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
-      level2: heroAbilities.talents.filter((item: ISkillTree) => item.level === 2).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
-      level3: heroAbilities.talents.filter((item: ISkillTree) => item.level === 3).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
-      level4: heroAbilities.talents.filter((item: ISkillTree) => item.level === 4).map((item:ISkillTree)=>abilities[`${item.name}`].dname),
+      level1: heroAbilities.talents
+        .filter((item: ISkillTree) => item.level === 1)
+        .map((item: ISkillTree) =>
+          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
+        ),
+      level2: heroAbilities.talents
+        .filter((item: ISkillTree) => item.level === 2)
+        .map((item: ISkillTree) =>
+          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
+        ),
+      level3: heroAbilities.talents
+        .filter((item: ISkillTree) => item.level === 3)
+        .map((item: ISkillTree) =>
+          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
+        ),
+      level4: heroAbilities.talents
+        .filter((item: ISkillTree) => item.level === 4)
+        .map((item: ISkillTree) =>
+          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
+        ),
     },
   };
 
