@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: corsAllowedUrls, 
+    origin: corsAllowedUrls,
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })

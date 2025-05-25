@@ -55,4 +55,3 @@ export interface IHeroStats {
   "8_pick": number;
   "8_win": number;
 }
-
