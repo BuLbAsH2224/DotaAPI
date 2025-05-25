@@ -1,13 +1,16 @@
 import { getHeroPopularItems, getItemsAPI } from "../other-api";
-import { IHeroPopularItemsID, IItem, IItems } from "../types";
+import { IItem } from "../types";
 import { Response } from "express";
 import { send } from "../utils";
 export const sendHeroPopularItemsFull = async (
   id: string,
   res: Response
 ): Promise<void> => {
-  const heroPopularItems: IHeroPopularItemsID = await getHeroPopularItems(id);
-  const items: IItems = await getItemsAPI();
+  try{
+  const [heroPopularItems, items] = await Promise.all([
+    getHeroPopularItems(id),
+    getItemsAPI(),
+  ]);
 
   if (!heroPopularItems) {
     send(res, 400, "text/plain", "hero not found");
@@ -34,4 +37,9 @@ export const sendHeroPopularItemsFull = async (
   };
 
   send(res, 200, "json", heroPopularItemsFilter);
+}
+catch(error){
+  console.error("ошибка: ", error)
+  send(res, 500, "text/plain", "error other api");
+}
 };

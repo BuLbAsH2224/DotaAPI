@@ -1,25 +1,6 @@
-export const getAbilityVideo = (
-  heroName: string,
-  abilityName: string
-): string => {
-  const heroNameFilter = heroName.replace("npc_dota_hero_", "");
-  const url = `${defaultUrl}/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${abilityName}.mp4`;
-
-  return url;
-};
-
-export const getAbilityImg = (
-  heroName: string,
-  abilityName: string
-): string => {
-  const heroNameFilter = heroName.replace("npc_dota_hero_", "");
-  const abilityNameFilter = abilityName.toLowerCase().split(" ").join("_");
-  const url = `${defaultUrl}/apps/dota2/images/dota_react/abilities/${heroNameFilter}_${abilityNameFilter}.png`;
-
-  return url;
-};
 import { Response } from "express";
 import {
+  IAbilities,
   IAbilityForSend,
   IAghsDesc,
   IFacet,
@@ -30,17 +11,32 @@ import { getAbilities, getAghs, getHeroesAbilities } from "../other-api";
 import { send } from "../utils";
 import { defaultUrl } from "../config";
 
+const getAbilityVideo = (heroName: string, abilityName: string): string => {
+  const heroNameFilter = heroName.replace("npc_dota_hero_", "");
+  const url = `${defaultUrl}/apps/dota2/videos/dota_react/abilities/${heroNameFilter}/${abilityName}.mp4`;
+  return url;
+};
+
+const getAbilityImg = (heroName: string, abilityName: string): string => {
+  const heroNameFilter = heroName.replace("npc_dota_hero_", "");
+  const abilityNameFilter = abilityName.toLowerCase().split(" ").join("_");
+  const url = `${defaultUrl}/apps/dota2/images/dota_react/abilities/${heroNameFilter}_${abilityNameFilter}.png`;
+  return url;
+};
+
+function getTalentName(abilities: IAbilities, name: string): string {
+  if (!abilities[`${name}`]) return "undefined";
+  return !abilities[`${name}`].dname
+    ? "N/A"
+    : abilities[`${name}`].dname.replace(/\{[^}]*\}/g, "N/A");
+}
+
 export const sendHeroAbilities = async (
   heroName: string,
   res: Response
 ): Promise<void> => {
   const [abilities, heroesAbilitiesInfo, heroesAghsAndShards] =
     await Promise.all([getAbilities(), getHeroesAbilities(), getAghs()]);
-
-  if (!abilities || !heroesAbilitiesInfo || !heroesAghsAndShards) {
-    send(res, 500, "text/plain", "Error other API");
-    return;
-  }
 
   // шард и аганим именно нужного персонажа
 
@@ -99,24 +95,16 @@ export const sendHeroAbilities = async (
     skillTree: {
       level1: heroAbilities.talents
         .filter((item: ISkillTree) => item.level === 1)
-        .map((item: ISkillTree) =>
-          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
-        ),
+        .map((item: ISkillTree) => getTalentName(abilities, item.name)),
       level2: heroAbilities.talents
         .filter((item: ISkillTree) => item.level === 2)
-        .map((item: ISkillTree) =>
-          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
-        ),
+        .map((item: ISkillTree) => getTalentName(abilities, item.name)),
       level3: heroAbilities.talents
         .filter((item: ISkillTree) => item.level === 3)
-        .map((item: ISkillTree) =>
-          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
-        ),
+        .map((item: ISkillTree) => getTalentName(abilities, item.name)),
       level4: heroAbilities.talents
         .filter((item: ISkillTree) => item.level === 4)
-        .map((item: ISkillTree) =>
-          abilities[`${item.name}`].dname.replace(/\{[^}]*\}/g, "N/A")
-        ),
+        .map((item: ISkillTree) => getTalentName(abilities, item.name)),
     },
   };
 
